@@ -11,7 +11,7 @@ async function main() {
   const bgProcesses = await Promise.all(bgCommands.map(processFromCommand));
   // Run main process
   console.debug('Running main command', mainCommand);
-  const mainProcess = spawn(...commandToSpawnArgs(mainCommand));
+  const mainProcess = spawn(...commandToSpawnArgs(mainCommand), { shell: true, stdio: 'inherit' });
 
   // Kill background processes
   mainProcess.on("exit", (code) => {
@@ -31,7 +31,7 @@ function processFromCommand(command) {
     let success = !testString;
     
     // Start the process
-    const proc = spawn(...commandToSpawnArgs(input));
+    const proc = spawn(...commandToSpawnArgs(input), { shell: true });
     proc.stdout.on("data", listenToCommand);
     proc.stderr.on("data", broadcastError);
     console.debug(`Command '${input}' successfully spawned`);
@@ -82,5 +82,5 @@ function processFromCommand(command) {
 // This is primitive, but works for now
 function commandToSpawnArgs(input) {
   const [cmd, ...args] = input.split(' ');
-  return [cmd, args, { shell: true }];
+  return [cmd, args];
 }

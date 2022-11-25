@@ -10,8 +10,11 @@ async function main() {
   // Run background processes
   const bgProcesses = await Promise.all(bgCommands.map(processFromCommand));
   // Run main process
-  console.debug('Running main command', mainCommand);
-  const mainProcess = spawn(...commandToSpawnArgs(mainCommand), { shell: true, stdio: 'inherit' });
+  console.debug("Running main command", mainCommand);
+  const mainProcess = spawn(...commandToSpawnArgs(mainCommand), {
+    shell: true,
+    stdio: "inherit",
+  });
 
   // Kill background processes
   mainProcess.on("exit", (code) => {
@@ -29,19 +32,18 @@ function processFromCommand(command) {
 
     // If no test string, we can just resolve immediately
     let success = !testString;
-    
+
     // Start the process
     const proc = spawn(...commandToSpawnArgs(input), { shell: true });
     proc.stdout.on("data", listenToCommand);
     proc.stderr.on("data", broadcastError);
     console.debug(`Command '${input}' successfully spawned`);
 
-
     // The easy way
     if (success) {
       return resolve(proc);
     }
-  
+
     // The hard way
     console.debug(`Command '${input}' awaiting test string '${testString}'`);
 
@@ -69,7 +71,9 @@ function processFromCommand(command) {
       // If we find the test string, resolve the promise as a success
       if (msg.includes(testString)) {
         success = true;
-        console.debug(`Command '${input}' output success message '${testString}'`);
+        console.debug(
+          `Command '${input}' output success message '${testString}'`
+        );
         return resolve(proc);
       }
     }
@@ -81,6 +85,6 @@ function processFromCommand(command) {
 
 // This is primitive, but works for now
 function commandToSpawnArgs(input) {
-  const [cmd, ...args] = input.split(' ');
+  const [cmd, ...args] = input.split(" ");
   return [cmd, args];
 }

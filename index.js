@@ -20,18 +20,37 @@ async function main() {
   });
 }
 
+// Runs a command and returns a promise that resolves with the process either
+// immediately after spawning or after a text match is found in the output
 function processFromCommand(command) {
   return new Promise((resolve) => {
+    // Get our inputs
     const [input, testString = "", duration = 5000] = command.split("::");
+    
+    // Start the process
     const proc = spawn(...commandToSpawnArgs(input));
+    console.debug(`Command '${input}' successfully spawned`);
     proc.stdout.on("data", listenToCommand);
     proc.stderr.on("data", broadcastError);
-    console.debug(`Command '${input}' successfully spawned`);
+
+    // The easy way
     if (!testString) {
       return resolve(proc);
     }
+  
+    // The hard way
     console.debug(`Command '${input}' awaiting test string '${testString}'`);
+
     let success = false;
+
+    // If we crash before we get off the ground, thats a failure
+    proc.on("exit", (code) => {
+      if (success === false && code) {
+        throw new Error(`${input} exited before start with code ${code}`);
+      }
+    });
+
+    // Blow up if we take too long to get a match
     setTimeout(() => {
       if (!success) {
         throw new Error(
@@ -40,9 +59,12 @@ function processFromCommand(command) {
       }
     }, duration);
 
+    // Just pipe out the output and error so that we have it in the terminal
+    // This can be tuned with flags later but idc right now
     function listenToCommand(data) {
       const msg = data.toString();
       console.debug(input + ":", msg);
+      // If we find the test string, resolve the promise as a success
       if (msg.includes(testString)) {
         success = true;
         console.debug(`Command '${input}' output success message '${testString}'`);
@@ -52,15 +74,10 @@ function processFromCommand(command) {
     function broadcastError(err) {
       console.error(input + ":", err);
     }
-    // Handle the end of the process
-    proc.on("exit", (code) => {
-      if (success === false && code) {
-        throw new Error(`${input} exited before start with code ${code}`);
-      }
-    });
   });
 }
 
+// This is primitive, but works for now
 function commandToSpawnArgs(input) {
   const [cmd, ...args] = input.split(' ');
   return [cmd, args, { shell: true }];

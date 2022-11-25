@@ -19,14 +19,18 @@ exec(
   (err, stdout, stderr) => {
     if (!err) {
       throw new Error("Command should not have run successfully");
-      if (
-        err.message !==
-        "Failed to find 'goodbye world' in 'echo hello world' in 1000ms"
-      ) {
-        throw new Error(
-          "Command should have failed with the correct error message"
-        );
-      }
+    }
+    if (
+      !err.message.includes(
+      "Failed to find 'goodbye world' in 'echo hello world' in 1000ms")
+    ) {
+      throw new Error(
+        "Command should have failed with the correct error message"
+      );
     }
   }
 );
+
+process.on('exit', (code) => {
+  console.log('Exiting with code', code);
+})

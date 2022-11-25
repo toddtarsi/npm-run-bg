@@ -26,26 +26,28 @@ function processFromCommand(command) {
   return new Promise((resolve) => {
     // Get our inputs
     const [input, testString = "", duration = 5000] = command.split("::");
+
+    // If no test string, we can just resolve immediately
+    let success = !testString;
     
     // Start the process
     const proc = spawn(...commandToSpawnArgs(input));
-    console.debug(`Command '${input}' successfully spawned`);
     proc.stdout.on("data", listenToCommand);
     proc.stderr.on("data", broadcastError);
+    console.debug(`Command '${input}' successfully spawned`);
+
 
     // The easy way
-    if (!testString) {
+    if (success) {
       return resolve(proc);
     }
   
     // The hard way
     console.debug(`Command '${input}' awaiting test string '${testString}'`);
 
-    let success = false;
-
     // If we crash before we get off the ground, thats a failure
     proc.on("exit", (code) => {
-      if (success === false && code) {
+      if (!success && code) {
         throw new Error(`${input} exited before start with code ${code}`);
       }
     });
@@ -63,7 +65,7 @@ function processFromCommand(command) {
     // This can be tuned with flags later but idc right now
     function listenToCommand(data) {
       const msg = data.toString();
-      console.debug(input + ":", msg);
+      console.debug(`${input}:${msg}`);
       // If we find the test string, resolve the promise as a success
       if (msg.includes(testString)) {
         success = true;

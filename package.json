@@ -1,0 +1,19 @@
+{
+  "name": "npm-run-bg",
+  "version": "1.0.0",
+  "author": "Todd Tarsi <tarsitodd@gmail.com>", 
+  "description": "Call `npm-run-bg [bg-npm-cmd] [main-cmd]` to start and kill a background process and run a main process from a single command. Good for certain CI systems or just ensuring dependencies are running.",
+  "repository": "git@github.com:toddtarsi/npm-run-bg.git",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": "16.x"
+  },
+  "private": false,
+  "bin": {
+    "npm-run-bg": "./main.js"
+  },
+  "scripts": {
+    "test": "node test.js"
+  }
+}
+

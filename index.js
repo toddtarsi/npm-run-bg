@@ -80,13 +80,13 @@ function processFromCommand(command) {
       }
     }
     function broadcastError(err) {
-      console.error(input + ":", err);
+      console.error(`${input}:${err.toString()}`);
     }
   });
 }
 
 // This is primitive, but works for now
 function commandToSpawnArgs(input) {
-  const [cmd, ...args] = input.split(" ");
+  const [cmd, ...args] = input.trim().split(" ");
   return [cmd, args];
 }

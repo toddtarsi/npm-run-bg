@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { spawn } = require("node:child_process");
 
 const args = process.argv.slice();

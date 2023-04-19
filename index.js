@@ -2,11 +2,15 @@
 
 const { spawn } = require("node:child_process");
 
+const silentArgs = ["--silent", "-s"];
+
 const args = process.argv.slice();
 const mainCommand = args.pop();
-const bgCommands = args.slice(2);
+const bgCommands = args.slice(2).filter(arg => silentArgs.includes(arg));
+const silent = silentArgs.find(arg => args.includes(arg));
 
 main();
+
 
 async function main() {
   // Run background processes
@@ -69,7 +73,9 @@ function processFromCommand(command) {
     // This can be tuned with flags later but idc right now
     function listenToCommand(data) {
       const msg = data.toString();
-      console.debug(`${input}:${msg}`);
+      if (!silent) {
+        console.debug(`${input}:${msg}`);
+      }
       // If we find the test string, resolve the promise as a success
       if (msg.includes(testString)) {
         success = true;

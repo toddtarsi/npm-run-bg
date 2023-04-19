@@ -6,11 +6,10 @@ const silentArgs = ["--silent", "-s"];
 
 const args = process.argv.slice();
 const mainCommand = args.pop();
-const bgCommands = args.slice(2).filter(arg => silentArgs.includes(arg));
+const bgCommands = args.slice(2).filter(arg => !silentArgs.includes(arg));
 const silent = silentArgs.find(arg => args.includes(arg));
 
 main();
-
 
 async function main() {
   // Run background processes
@@ -93,6 +92,6 @@ function processFromCommand(command) {
 
 // This is primitive, but works for now
 function commandToSpawnArgs(input) {
-  const [cmd, ...args] = input.trim().split(" ");
-  return [cmd, args];
+  const [cmd, ...values] = input.trim().split(" ");
+  return [cmd, values];
 }

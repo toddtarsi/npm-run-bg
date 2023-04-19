@@ -3,19 +3,20 @@ const { join } = require("node:path");
 
 const mainFilepath = join(__dirname, "..", "index.js");
 exec(
-  `node ${mainFilepath} 'echo hello world::hello world::1000' 'echo howdy folks'`,
+  `node ${mainFilepath} -s 'echo hello world::hello world::1000' 'echo howdy folks'`,
   (err, stdout, stderr) => {
     if (err) {
       throw new Error("Command should have run successfully");
     }
     if (stderr) {
+      console.error(stderr);
       throw new Error("Command should not have any stderr");
     }
   }
 );
 
 exec(
-  `node ${mainFilepath} 'echo hello world::goodbye world::1000' 'echo howdy folks'`,
+  `node ${mainFilepath} -s 'echo hello world::goodbye world::1000' 'echo howdy folks'`,
   (err, stdout, stderr) => {
     if (!err) {
       throw new Error("Command should not have run successfully");
